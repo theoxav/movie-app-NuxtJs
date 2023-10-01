@@ -6,24 +6,30 @@
     <!-- Search Movies -->
     <SearchMovies :search-input.sync="searchInput" @reset-search="reset" />
 
+    <!-- Loading-->
+    <DSLoading v-if="$fetchState.pending" />
     <!-- Movies -->
-    <TheMoviesList :movies="getMovies" />
+    <TheMoviesList v-else :movies="getMovies" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import SearchMovies from '~/components/Movies/List/components/SearchMovies.vue'
-import TheMoviesList from '~/components/Movies/List/TheMoviesList.vue'
+import Hero from '@/components/US/Hero/Hero.vue'
+import DSLoading from '@/components/DS/DSLoading/DSLoading.vue'
+import SearchMovies from '@/components/US/Movies/List/components/SearchMovies.vue'
+import TheMoviesList from '~/components/US/Movies/List/TheMoviesList.vue'
 
 export default {
   components: {
+    Hero,
     TheMoviesList,
     SearchMovies,
+    DSLoading,
   },
   data() {
     return {
-      searchInput: ''
+      searchInput: '',
     }
   },
   async fetch() {
@@ -42,10 +48,10 @@ export default {
   watch: {
     searchInput(value) {
       if (!value.trim()) {
-        this.fetchMovies();
+        this.fetchMovies()
         this.$store.dispatch('movies/resetSearchInput', false)
       } else {
-        this.$store.dispatch('movies/searchMovies', value);
+        this.$store.dispatch('movies/searchMovies', value)
       }
     },
   },
@@ -57,7 +63,6 @@ export default {
     reset() {
       this.$store.dispatch('movies/resetSearchInput')
       this.searchInput = ''
-      this.$fetch()
     },
   },
 }
@@ -65,11 +70,6 @@ export default {
 
 <style lang="scss">
 .home {
-  .loading {
-    padding-top: 120px;
-    align-items: flex-start;
-  }
-
   .search {
     display: flex;
     padding: 32px 16px;
