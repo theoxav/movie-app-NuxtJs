@@ -21,6 +21,24 @@ import SearchMovies from '@/components/US/Movies/List/components/SearchMovies.vu
 import TheMoviesList from '~/components/US/Movies/List/TheMoviesList.vue'
 
 export default {
+  name: 'TheHomePage',
+  head() {
+    return {
+      title: 'Movie App - Latest Streaming Movie Info',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'Get all the latest streaming movies in theaters & online',
+        },
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content: 'movies, stream, stremaing',
+        },
+      ],
+    }
+  },
   components: {
     Hero,
     TheMoviesList,
