@@ -42,7 +42,7 @@ export const actions = {
     }
   },
 
-  resetSearchInput({ commit }) {
-    commit('SET_IS_SEARCH_MODE', false)
+  resetSearchInput({ commit }, value) {
+    commit('SET_IS_SEARCH_MODE', value)
   },
 }

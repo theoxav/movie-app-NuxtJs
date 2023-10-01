@@ -2,42 +2,32 @@
   <div class="home">
     <!-- Hero -->
     <Hero />
-    <!-- Search-->
-    <div class="container search">
-      <input
-        v-model="searchInput"
-        placeholder="Search"
-        type="text"
-        @keyup="$fetch"
-      />
-      <button v-show="searchInput !== ''" class="button" @click="reset">
-        Clear Search
-      </button>
-    </div>
-    <!-- Movies-->
+
+    <!-- Search Movies -->
+    <SearchMovies :search-input.sync="searchInput" @reset-search="reset" />
+
+    <!-- Movies -->
     <TheMoviesList :movies="getMovies" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import SearchMovies from '~/components/Movies/List/components/SearchMovies.vue'
 import TheMoviesList from '~/components/Movies/List/TheMoviesList.vue'
 
 export default {
   components: {
     TheMoviesList,
+    SearchMovies,
   },
   data() {
     return {
-      searchInput: '',
+      searchInput: ''
     }
   },
-  fetch() {
-    if (this.searchInput === '') {
-      this.reset()
-      return this.fetchMovies()
-    }
-    this.searchMovies()
+  async fetch() {
+    await this.fetchMovies()
   },
   computed: {
     ...mapState({
@@ -49,21 +39,30 @@ export default {
       return this.isSearchMode ? this.searchedMovies : this.movies
     },
   },
+  watch: {
+    searchInput(value) {
+      if (!value.trim()) {
+        this.fetchMovies();
+        this.$store.dispatch('movies/resetSearchInput', false)
+      } else {
+        this.$store.dispatch('movies/searchMovies', value);
+      }
+    },
+  },
 
   methods: {
     async fetchMovies() {
       await this.$store.dispatch('movies/fetchMovies')
     },
-    async searchMovies() {
-      await this.$store.dispatch('movies/searchMovies', this.searchInput)
-    },
     reset() {
       this.$store.dispatch('movies/resetSearchInput')
       this.searchInput = ''
+      this.$fetch()
     },
   },
 }
 </script>
+
 <style lang="scss">
 .home {
   .loading {
