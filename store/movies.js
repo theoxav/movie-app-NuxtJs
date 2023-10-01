@@ -1,4 +1,4 @@
-import axios from 'axios';
+import MovieService from '@/services/api/MovieServices';
 
 export const state = () => ({
   movies: [],
@@ -23,27 +23,35 @@ export const mutations = {
 };
 
 export const actions = {
-  fetchMovies: async ({ commit }) => {
-    const response = await axios.get(
-      'https://api.themoviedb.org/3/movie/now_playing?api_key=985325e85babad8daa9c3d33d2836e61&language=en-US&page=1'
-    );
-    commit('SET_MOVIES', response.data.results);
+  async fetchMovies({ commit }) {
+    try {
+      const movies = await MovieService.getAll();
+      commit('SET_MOVIES', movies);
+    } catch (error) {
+      console.error('Error fetching movies:', error);
+    }
   },
 
-  fetchMovieById: async ({ commit }, movieId) => {
-    const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=985325e85babad8daa9c3d33d2836e61&language=en-US`);
-    commit('SET_MOVIE', response.data);
-     },
-
-  searchMovies: async ({ commit }, inputSearch) => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/search/movie?api_key=985325e85babad8daa9c3d33d2836e61&language=en-US&page=1&query=${inputSearch}`
-    );
-    commit('SET_SEARCHED_MOVIES', response.data.results);
-    commit('SET_IS_SEARCH_MODE', true);
+  async fetchMovieById({ commit }, movieId) {
+    try {
+      const movie = await MovieService.getById(movieId);
+      commit('SET_MOVIE', movie);
+    } catch (error) {
+      console.error('Error fetching movie by ID:', error);
+    }
   },
 
-  resetSearchInput:  ({ commit }, value) => {
+  async searchMovies({ commit }, inputSearch) {
+    try {
+      const searchedMovies = await MovieService.searchMovies(inputSearch);
+      commit('SET_SEARCHED_MOVIES', searchedMovies);
+      commit('SET_IS_SEARCH_MODE', true);
+    } catch (error) {
+      console.error('Error searching movies:', error);
+    }
+  },
+
+  resetSearchInput({ commit }, value) {
     commit('SET_IS_SEARCH_MODE', value);
   },
 };
